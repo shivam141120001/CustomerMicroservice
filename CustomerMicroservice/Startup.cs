@@ -16,6 +16,8 @@ using CustomerMicroservice.Context;
 using CustomerMicroservice.Models;
 using Microsoft.OpenApi.Models;
 using CustomerMicroservice.Middleware;
+using System.Reflection;
+using System.IO;
 
 namespace CustomerMicroservice
 {
@@ -36,7 +38,11 @@ namespace CustomerMicroservice
             services.AddScoped<IAuthMiddleware, AuthMiddleware>();
             services.AddDbContext<CustomerMicroserviceDbContext>(option => option.UseInMemoryDatabase(Configuration.GetConnectionString("connstr")));
 
-            services.AddSwaggerGen(c => c.SwaggerDoc(name: "v1.0", new OpenApiInfo { Title = "Customer Microservice ", Version = "1.0" }));
+          /*  services.AddSwaggerGen(c => c.SwaggerDoc(name: "v1.0", new OpenApiInfo { Title = "Customer Microservice ", Version = "1.0"
+            
+            }));*/
+          
+
             services.AddCors();
         }
 
@@ -51,12 +57,18 @@ namespace CustomerMicroservice
             }
             
             loggerFactory.AddLog4Net();
-            
-            app.UseSwagger();
+/*
+            app.UseSwagger(c =>
+            {
+                c.SerializeAsV2 = true;
+            });
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint(url: "/swagger/v1.0/swagger.json", "Customer Microservice (V 1.0)");
+                c.RoutePrefix = string.Empty;
             });
+*/
+
             
             app.UseHttpsRedirection();
 
@@ -68,7 +80,8 @@ namespace CustomerMicroservice
             {
                 endpoints.MapControllers();
             });
-            
+
+          
             var context = app.ApplicationServices.CreateScope().ServiceProvider.GetService<CustomerMicroserviceDbContext>();
             SeedData(context);
         }
